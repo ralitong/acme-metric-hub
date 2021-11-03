@@ -1,3 +1,4 @@
+from datetime import datetime
 import unittest
 import time
 from acme_server import AcmeServer
@@ -26,15 +27,30 @@ class TestAcmeServer(unittest.TestCase):
         interval = self.acme_server.generate_unusual_interval()
         self.assertLessEqual(interval, self.acme_server.unusual_interval_upper)
 
-    @unittest.skip("skip for now")
-    def test_generate_batch_process_message(self):
-        request = self.acme_server.generate_batch_request()
+    def test_generate_normal_time_interval(self):
+        interval = self.acme_server.generate_normal_time_interval()
+        self.assertIsNotNone(interval['start_time'])
+        self.assertIsNotNone(interval['end_time'])
+
+    def test_generate_normal_time_interval_gap_is_correct(self):
+        interval = self.acme_server.generate_normal_time_interval()
+
+    def test_generate_normal_batch_process(self):
+        request = self.acme_server.generate_normal_batch_process()
         self.assertIsNotNone(request['server_name'])
         self.assertIsNotNone(request['start_time'])
         self.assertIsNotNone(request['end_time'])
 
+    def test_generate_unusual_time_interval(self):
+        interval = self.acme_server.generate_unusual_time_interval()
+        self.assertIsNotNone(interval['start_time'])
+        self.assertIsNotNone(interval['end_time'])
 
-
+    def test_generate_unusual_batch_process(self):
+        request = self.acme_server.generate_unusual_batch_process()
+        self.assertIsNotNone(request['server_name'])
+        self.assertIsNotNone(request['start_time'])
+        self.assertIsNotNone(request['end_time'])
 
     # def test_upper(self):
     #     self.assertEqual('foo'.upper(), 'FOO')
