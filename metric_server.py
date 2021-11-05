@@ -7,7 +7,6 @@ class MetricServer:
     def __init__(self, log_level='INFO'):
         self.set_log_level(log_level)
 
-    
     def set_log_level(self, log_level):
         level = {}
         if(log_level == 'DEBUG'):
@@ -46,14 +45,46 @@ class MetricServer:
         logging.debug('Computing time gap between: Start date={} End date={} Total gap={}'.format(data['start_time'], data['end_time'], rounded_off))
         return rounded_off
 
-    def compute_mean(self, timegaps):
-        gaps = [  self.compute_gap(gap) for gap in timegaps]
+    def compute_mean(self, durations):
+        gaps = [  self.compute_gap(gap) for gap in durations]
         return round(statistics.mean(gaps))
 
     def compute_standard_deviation(self, timegaps):
         gaps = [  self.compute_gap(gap) for gap in timegaps]
         return round(statistics.stdev(gaps))
 
+
+    def get_all_durations(self):
+        gaps = []
+        for key in self.storage.keys():
+            gaps.extend(self.storage[key])
+        return gaps
+
+    def get_overall_mean(self):
+        return self.compute_mean(self.get_all_durations())
+
+    def get_overall_standard_deviation(self):
+        return self.compute_standard_deviation(self.get_all_durations())
+
+    def get_outlier_servers(self):
+        standard_deviation_times_three = self.get_overall_standard_deviation() * 3
+        outlier_lower_limit = self.get_overall_mean() - standard_deviation_times_three
+        outlier_upper_limit = self.get_overall_mean() + standard_deviation_times_three
+        logging.debug('Standard deviation: {}'.format(self.get_overall_standard_deviation()) )
+        logging.debug('Standard deviation times three: {}'.format(standard_deviation_times_three) )
+        logging.debug('Outlier lower limit: {}'.format(outlier_lower_limit) )
+        logging.debug('Outlier upper limit: {}'.format(outlier_upper_limit) )
+        servers = []
+        for server in self.storage.keys():
+            for duration in self.storage[server]:
+                gap = self.compute_gap(duration)
+                logging.debug('The gaps computed: ' + str(gap))
+                if gap < outlier_lower_limit or gap > outlier_upper_limit:
+                    servers.append(server)
+
+        return servers
+
+                
 
 
 
