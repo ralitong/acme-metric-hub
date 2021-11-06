@@ -172,7 +172,61 @@ class TestMetricCore(unittest.TestCase):
         self.assertListEqual(expected, outliers)
 
 
-    
+    def test_process_statistics(self):
+        inputs = {
+            't-111111111': [
+                { 'start_time': '2021-11-04T15:49:03.224052', 'end_time': '2021-11-04T16:16:48.224052' },
+                { 'start_time': '2021-11-04T15:49:03.285827', 'end_time': '2021-11-04T16:19:09.285827' },
+                { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:18:45.295629' }
+            ],
+            't-222222222': [
+                { 'start_time': '2021-11-04T15:49:03.224052', 'end_time': '2021-11-04T16:16:48.224052' },
+                { 'start_time': '2021-11-04T15:49:03.285827', 'end_time': '2021-11-04T16:19:09.285827' },
+                { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:18:45.295629' }
+            ],
+            't-333333333': [
+                { 'start_time': '2021-11-04T15:49:03.224052', 'end_time': '2021-11-04T16:16:48.224052' },
+                { 'start_time': '2021-11-04T15:49:03.285827', 'end_time': '2021-11-04T16:19:09.285827' },
+                { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:18:45.295629' },
+                { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:18:45.295629' }
+            ]
+        }
+
+        self.metric_core.storage = inputs
+
+        processed_statistics = self.metric_core.process_statistics()
+        self.assertEqual(processed_statistics['mean'], 1754)
+        self.assertEqual(processed_statistics['stddev'], 62)
+
+    def test_process_statistics_should_return_empty_object_when_less_than_ten_durations(self):
+        inputs = {
+            't-111111111': [
+                { 'start_time': '2021-11-04T15:49:03.224052', 'end_time': '2021-11-04T16:16:48.224052' },
+                { 'start_time': '2021-11-04T15:49:03.285827', 'end_time': '2021-11-04T16:19:09.285827' },
+                { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:18:45.295629' }
+            ],
+            't-222222222': [
+                { 'start_time': '2021-11-04T15:49:03.224052', 'end_time': '2021-11-04T16:16:48.224052' },
+                { 'start_time': '2021-11-04T15:49:03.285827', 'end_time': '2021-11-04T16:19:09.285827' },
+                { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:18:45.295629' }
+            ],
+            't-333333333': [
+                { 'start_time': '2021-11-04T15:49:03.224052', 'end_time': '2021-11-04T16:16:48.224052' },
+                { 'start_time': '2021-11-04T15:49:03.285827', 'end_time': '2021-11-04T16:19:09.285827' },
+                { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:18:45.295629' },
+            ]
+        }
+
+        self.metric_core.storage = inputs
+
+        processed_statistics = self.metric_core.process_statistics()
+        self.assertEqual(processed_statistics['mean'], '')
+        self.assertEqual(processed_statistics['stddev'], '')
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

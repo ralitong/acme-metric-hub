@@ -58,11 +58,9 @@ class TestAcmeServer(unittest.TestCase):
         self.acme_core = AcmeCore(metric_server=expected_metric_server)
         self.assertEqual(expected_metric_server, self.acme_core.metric_server)
 
-    @unittest.expectedFailure
     def test_posting_of_normal_batch_process(self):
         self.acme_core.post_normal_batch_process()
 
-    @unittest.expectedFailure
     def test_posting_of_unusual_batch_process(self):
         self.acme_core.post_unusual_batch_process()
 
@@ -71,20 +69,6 @@ class TestAcmeServer(unittest.TestCase):
 
     def test_setting_of_log_level_in_constructor(self):
         self.acme_core = AcmeCore(log_level='INFO')
-
-    # def test_upper(self):
-    #     self.assertEqual('foo'.upper(), 'FOO')
-
-    # def test_isupper(self):
-    #     self.assertTrue('FOO'.isupper())
-    #     self.assertFalse('Foo'.isupper())
-
-    # def test_split(self):
-    #     s = 'hello world'
-    #     self.assertEqual(s.split(), ['hello', 'world'])
-    #     # check that s.split fails when the separator is not a string
-    #     with self.assertRaises(TypeError):
-    #         s.split(2)
 
 if __name__ == '__main__':
     unittest.main()

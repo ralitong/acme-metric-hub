@@ -5,7 +5,10 @@ import time
 
 if __name__ == '__main__':
     metric_server = sys.argv[1]
-    send_unusual = sys.argv[2]
+    send_unusual = ''
+
+    if(len(sys.argv) > 2):
+        send_unusual = sys.argv[2]
 
     acme_core = AcmeCore(metric_server=metric_server)
 

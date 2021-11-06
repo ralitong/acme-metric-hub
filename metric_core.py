@@ -2,6 +2,7 @@ import logging
 import statistics
 from dateutil import parser
 
+
 class MetricCore:
 
     def __init__(self, log_level='INFO'):
@@ -21,38 +22,38 @@ class MetricCore:
             level = logging.CRITICAL
         logging.basicConfig(
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=level)
-        
-        self.storage = {}
 
+        self.storage = {}
 
     def store(self, data):
         if not data['server_name'] in self.storage:
             self.storage[data['server_name']] = []
-        
-        logging.debug('Storing data: Server name={} Start date={} End date={}'.format(data['server_name'],data['start_time'], data['end_time']))
+
+        logging.debug('Storing data: Server name={} Start date={} End date={}'.format(
+            data['server_name'], data['start_time'], data['end_time']))
 
         self.storage[data['server_name']].append({
             'start_time': data['start_time'],
             'end_time': data['end_time']
         })
-    
+
     def compute_gap(self, data):
         start_time = parser.isoparse(data['start_time'])
         end_time = parser.isoparse(data['end_time'])
         delta = end_time - start_time
         rounded_off = round(delta.total_seconds())
 
-        logging.debug('Computing time gap between: Start date={} End date={} Total gap={}'.format(data['start_time'], data['end_time'], rounded_off))
+        logging.debug('Computing time gap between: Start date={} End date={} Total gap={}'.format(
+            data['start_time'], data['end_time'], rounded_off))
         return rounded_off
 
     def compute_mean(self, durations):
-        gaps = [  self.compute_gap(gap) for gap in durations]
+        gaps = [self.compute_gap(gap) for gap in durations]
         return round(statistics.mean(gaps))
 
     def compute_standard_deviation(self, timegaps):
-        gaps = [  self.compute_gap(gap) for gap in timegaps]
+        gaps = [self.compute_gap(gap) for gap in timegaps]
         return round(statistics.stdev(gaps))
-
 
     def get_all_durations(self):
         gaps = []
@@ -70,10 +71,12 @@ class MetricCore:
         standard_deviation_times_three = self.get_overall_standard_deviation() * 3
         outlier_lower_limit = self.get_overall_mean() - standard_deviation_times_three
         outlier_upper_limit = self.get_overall_mean() + standard_deviation_times_three
-        logging.debug('Standard deviation: {}'.format(self.get_overall_standard_deviation()) )
-        logging.debug('Standard deviation times three: {}'.format(standard_deviation_times_three) )
-        logging.debug('Outlier lower limit: {}'.format(outlier_lower_limit) )
-        logging.debug('Outlier upper limit: {}'.format(outlier_upper_limit) )
+        logging.debug('Standard deviation: {}'.format(
+            self.get_overall_standard_deviation()))
+        logging.debug('Standard deviation times three: {}'.format(
+            standard_deviation_times_three))
+        logging.debug('Outlier lower limit: {}'.format(outlier_lower_limit))
+        logging.debug('Outlier upper limit: {}'.format(outlier_upper_limit))
         servers = []
         for server in self.storage.keys():
             for duration in self.storage[server]:
@@ -84,14 +87,15 @@ class MetricCore:
 
         return servers
 
-                
-
-
-
-
-
-
-
-
-
-
+    def process_statistics(self):
+        num_durations = len(self.get_all_durations())
+        if num_durations >= 10:
+            return {
+                'mean': self.get_overall_mean(),
+                'stddev': self.get_overall_standard_deviation()
+            }
+        else:
+            return {
+                'mean': '',
+                'stddev': ''
+            }
