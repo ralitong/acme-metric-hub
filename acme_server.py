@@ -15,8 +15,8 @@ if __name__ == '__main__':
     while True:
         time.sleep(2)
         if send_unusual == 'send_unusual':
-            acme_core.post_unusual_batch_process()
+            acme_core.post_unusual_report()
         else:
-            acme_core.post_normal_batch_process()
+            acme_core.post_normal_report()
             
 

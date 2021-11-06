@@ -23,16 +23,16 @@ class MetricCore:
         logging.basicConfig(
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=level)
 
-        self.storage = {}
+        self.reports = {}
 
     def store(self, data):
-        if not data['server_name'] in self.storage:
-            self.storage[data['server_name']] = []
+        if not data['server_name'] in self.reports:
+            self.reports[data['server_name']] = []
 
         logging.debug('Storing data: Server name={} Start date={} End date={}'.format(
             data['server_name'], data['start_time'], data['end_time']))
 
-        self.storage[data['server_name']].append({
+        self.reports[data['server_name']].append({
             'start_time': data['start_time'],
             'end_time': data['end_time']
         })
@@ -57,8 +57,8 @@ class MetricCore:
 
     def get_all_durations(self):
         gaps = []
-        for key in self.storage.keys():
-            gaps.extend(self.storage[key])
+        for key in self.reports.keys():
+            gaps.extend(self.reports[key])
         return gaps
 
     def get_overall_mean(self):
@@ -78,8 +78,8 @@ class MetricCore:
         logging.debug('Outlier lower limit: {}'.format(outlier_lower_limit))
         logging.debug('Outlier upper limit: {}'.format(outlier_upper_limit))
         servers = []
-        for server in self.storage.keys():
-            for duration in self.storage[server]:
+        for server in self.reports.keys():
+            for duration in self.reports[server]:
                 gap = self.compute_gap(duration)
                 logging.debug('The gaps computed: ' + str(gap))
                 if gap < outlier_lower_limit or gap > outlier_upper_limit:

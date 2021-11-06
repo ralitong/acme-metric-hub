@@ -59,10 +59,10 @@ class TestAcmeServer(unittest.TestCase):
         self.assertEqual(expected_metric_server, self.acme_core.metric_server)
 
     def test_posting_of_normal_batch_process(self):
-        self.acme_core.post_normal_batch_process()
+        self.acme_core.post_normal_report()
 
     def test_posting_of_unusual_batch_process(self):
-        self.acme_core.post_unusual_batch_process()
+        self.acme_core.post_unusual_report()
 
     def test_setting_of_log_level(self):
         self.acme_core.set_log_level('INFO')

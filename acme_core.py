@@ -94,7 +94,7 @@ class AcmeCore():
         logging.debug('Generated unusual batch process: Server name={} Start date={} End date={}'.format(process['server_name'],process['start_time'], process['end_time']))
         return process
 
-    def post_normal_batch_process(self):
+    def post_normal_report(self):
         process = self.generate_normal_batch_process()
         logging.info('Posting normal batch process: Server name={} Start date={} End date={} url={}'.format(process['server_name'],process['start_time'], process['end_time'], self.metric_server))
 
@@ -103,7 +103,7 @@ class AcmeCore():
         except:
             logging.info('Posting normal batch process to {} failed, reason: {}'.format(self.metric_server, sys.exc_info()[0]))
 
-    def post_unusual_batch_process(self):
+    def post_unusual_report(self):
         process = self.generate_unusual_batch_process()
         logging.info('Posting unusual batch process: Server name={} Start date={} End date={} url={}'.format(process['server_name'],process['start_time'], process['end_time'], self.metric_server))
         
