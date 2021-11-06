@@ -1,20 +1,24 @@
-from acme_core import AcmeCore
+import argparse
 import sys
 import time
+from acme_core import AcmeCore
+
 
 
 if __name__ == '__main__':
-    metric_server = sys.argv[1]
-    send_unusual = ''
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('metric_server', type=str, default='http://localhost:50000')
+    parser.add_argument('--sleep', type=int, default=2)
+    parser.add_argument('--send-unusual', help='Acme server will send unusual report', action='store_true')
 
-    if(len(sys.argv) > 2):
-        send_unusual = sys.argv[2]
+    args = parser.parse_args()
 
-    acme_core = AcmeCore(metric_server=metric_server)
+    acme_core = AcmeCore(metric_server=args.metric_server)
 
     while True:
-        time.sleep(2)
-        if send_unusual == 'send_unusual':
+        time.sleep(args.sleep)
+        if args.send_unusual:
             acme_core.post_unusual_report()
         else:
             acme_core.post_normal_report()

@@ -117,6 +117,10 @@ class TestMetricCore(unittest.TestCase):
         mean = self.metric_core.get_overall_mean()
         self.assertEqual(mean, 1751)
 
+    def test_getting_overall_mean_should_return_zero_if_reports_empty(self):
+        mean = self.metric_core.get_overall_mean()
+        self.assertEqual(mean, 0)
+
     def test_getting_overall_standard_deviation(self):
         inputs = {
             't-111111111': [
@@ -140,7 +144,11 @@ class TestMetricCore(unittest.TestCase):
         standard_deviation = self.metric_core.get_overall_standard_deviation()
         self.assertEqual(standard_deviation, 65)
 
-    def test_processing_outliers(self):
+    def test_getting_overall_standard_deviation_should_return_0_if_reports_empty(self):
+        standard_deviation = self.metric_core.get_overall_standard_deviation()
+        self.assertEqual(standard_deviation, 0)
+
+    def test_process_outliers(self):
         inputs = {
             't-111111111': [
                 { 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' },
@@ -167,10 +175,13 @@ class TestMetricCore(unittest.TestCase):
 
         self.metric_core.reports = inputs
 
-        outliers = self.metric_core.get_outlier_servers()
+        outliers = self.metric_core.process_outliers()
         expected = [ 't-444444444' ]
         self.assertListEqual(expected, outliers)
 
+    def test_process_outliers_empty_should_return_empty_list(self):
+        outliers = self.metric_core.process_outliers()
+        self.assertTrue(len(outliers) == 0)
 
     def test_process_statistics(self):
         inputs = {

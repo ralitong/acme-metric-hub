@@ -1,3 +1,4 @@
+import json
 from flask import Flask
 from flask import request, abort
 from metric_core import MetricCore
@@ -24,6 +25,7 @@ def process_statistics():
     else:
         return statistics
 
-    # data = request.get_json()
-    # app.logger.info('Received: Server name={} Start time={} End time={}'.format(data['server_name'], data['start_time'], data['end_time']))
-    # metric_core.store(data)
+
+@app.route('/process_outliers', methods=['GET'])
+def process_outliers():
+    return json.dumps(metric_core.process_outliers())

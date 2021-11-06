@@ -13,7 +13,7 @@ class AcmeCore():
         logging.debug('Server name: ' + self.name)
         self.normal_interval_lower = 1620
         self.normal_interval_upper = 1800
-        self.unusual_interval_lower = 1500
+        self.unusual_interval_lower = 1400
         self.unusual_interval_upper = 2100
         self.metric_server = metric_server
 

@@ -62,21 +62,30 @@ class MetricCore:
         return gaps
 
     def get_overall_mean(self):
-        return self.compute_mean(self.get_all_durations())
+        durations = self.get_all_durations()
+        if(len(durations) == 0):
+            logging.warning('No reports yet available, returning overall mean as 0')
+            return 0
+        return self.compute_mean(durations)
 
     def get_overall_standard_deviation(self):
-        return self.compute_standard_deviation(self.get_all_durations())
+        durations = self.get_all_durations()
+        if(len(durations) == 0):
+            logging.warning('No reports yet available, returning overall standard deviation as 0')
+            return 0
+        return self.compute_standard_deviation(durations)
 
-    def get_outlier_servers(self):
-        standard_deviation_times_three = self.get_overall_standard_deviation() * 3
-        outlier_lower_limit = self.get_overall_mean() - standard_deviation_times_three
-        outlier_upper_limit = self.get_overall_mean() + standard_deviation_times_three
-        logging.debug('Standard deviation: {}'.format(
-            self.get_overall_standard_deviation()))
-        logging.debug('Standard deviation times three: {}'.format(
-            standard_deviation_times_three))
+    def process_outliers(self):
+        standard_deviation = self.get_overall_standard_deviation()
+        mean = self.get_overall_mean()
+        outlier_lower_limit = mean - (standard_deviation * 3)
+        outlier_upper_limit = mean + (standard_deviation * 3)
+        
+        logging.debug('Standard deviation: {}'.format(standard_deviation))
+        logging.debug('Standard deviation times three: {}'.format(standard_deviation * 3))
         logging.debug('Outlier lower limit: {}'.format(outlier_lower_limit))
         logging.debug('Outlier upper limit: {}'.format(outlier_upper_limit))
+
         servers = []
         for server in self.reports.keys():
             for duration in self.reports[server]:
@@ -85,7 +94,7 @@ class MetricCore:
                 if gap < outlier_lower_limit or gap > outlier_upper_limit:
                     servers.append(server)
 
-        return servers
+        return list(set(servers))
 
     def process_statistics(self):
         num_durations = len(self.get_all_durations())
