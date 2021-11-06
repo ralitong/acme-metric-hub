@@ -2,6 +2,7 @@ import datetime
 import logging
 import random
 import requests
+import sys
 
 
 class AcmeCore():
@@ -95,10 +96,18 @@ class AcmeCore():
 
     def post_normal_batch_process(self):
         process = self.generate_normal_batch_process()
-        logging.debug('Posting normal batch process: Server name={} Start date={} End date={} url={}'.format(process['server_name'],process['start_time'], process['end_time'], self.metric_server))
-        requests.post(self.metric_server, process)
+        logging.info('Posting normal batch process: Server name={} Start date={} End date={} url={}'.format(process['server_name'],process['start_time'], process['end_time'], self.metric_server))
+
+        try:
+            requests.post(self.metric_server + '/process_report', json=process)
+        except:
+            logging.info('Posting normal batch process to {} failed, reason: {}'.format(self.metric_server, sys.exc_info()[0]))
 
     def post_unusual_batch_process(self):
         process = self.generate_unusual_batch_process()
-        logging.debug('Posting unusual batch process: Server name={} Start date={} End date={} url={}'.format(process['server_name'],process['start_time'], process['end_time'], self.metric_server))
-        requests.post(self.metric_server, process)
+        logging.info('Posting unusual batch process: Server name={} Start date={} End date={} url={}'.format(process['server_name'],process['start_time'], process['end_time'], self.metric_server))
+        
+        try:
+            requests.post(self.metric_server + '/process_report', json=process)
+        except:
+            logging.info('Posting unusual batch process to {} failed, reason: {}'.format(self.metric_server, sys.exc_info()[0]))
