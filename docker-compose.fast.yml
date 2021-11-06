@@ -1,0 +1,50 @@
+version: '3'
+services:
+    metricserver:
+      build:
+        context: ./
+        dockerfile: Dockerfile.MetricServer
+      deploy:
+        restart_policy:
+          condition: on-failure
+          delay: 5s
+          max_attempts: 10
+          window: 120s
+      command: ['5000']
+      ports: 
+          - "5000:5000"
+    normalacmeserver_a:
+      build:
+        context: ./
+        dockerfile: Dockerfile.AcmeServer
+      command: ['http://metricserver:5000']
+    normalacmeserver_b:
+      build:
+        context: ./
+        dockerfile: Dockerfile.AcmeServer
+      command: ['http://metricserver:5000']
+    normalacmeserver_c:
+      build:
+        context: ./
+        dockerfile: Dockerfile.AcmeServer
+      command: ['http://metricserver:5000']
+    normalacmeserver_d:
+      build:
+        context: ./
+        dockerfile: Dockerfile.AcmeServer
+      command: ['http://metricserver:5000']
+    unusualacmeserver_a:
+      build:
+        context: ./
+        dockerfile: Dockerfile.AcmeServer
+      command: ['http://metricserver:5000', '--sleep', '10', '--send-unusual']
+    unusualacmeserver_b:
+      build:
+        context: ./
+        dockerfile: Dockerfile.AcmeServer
+      command: ['http://metricserver:5000', '--sleep', '10', '--send-unusual']
+    unusualacmeserver_c:
+      build:
+        context: ./
+        dockerfile: Dockerfile.AcmeServer
+      command: ['http://metricserver:5000', '--sleep', '10', '--send-unusual']

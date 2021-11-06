@@ -4,7 +4,6 @@ from flask import request, abort
 from metric_core import MetricCore
 
 app = Flask(__name__)
-# logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 metric_core = MetricCore()
 
 
