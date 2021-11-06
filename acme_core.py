@@ -39,7 +39,7 @@ class AcmeCore():
         return now
 
     def generate_server_name(self):
-        number = ''.join([str(random.randrange(10)) for x in range(10)])
+        number = ''.join([str(random.randrange(9)) for x in range(9)])
         name = 't-' + number
         logging.debug('Generated Server name: ' + name)
         return name
@@ -60,9 +60,10 @@ class AcmeCore():
         interval = self.generate_normal_interval()
         start = self.generate_utc_date()
         end = start + datetime.timedelta(seconds=interval)
+        
         time_interval = {
-            "start_time": start.isoformat(),
-            "end_time": end.isoformat()
+            "start_time": start.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "end_time": end.strftime('%Y-%m-%dT%H:%M:%SZ')
         }
         logging.debug('Generated normal time interval: Start date={} End date={}'.format(time_interval['start_time'], time_interval['end_time']))
         return time_interval
@@ -72,13 +73,13 @@ class AcmeCore():
         start = self.generate_utc_date()
         end = start + datetime.timedelta(seconds=interval)
         time_interval = {
-            "start_time": start.isoformat(),
-            "end_time": end.isoformat()
+            "start_time": start.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "end_time": end.strftime('%Y-%m-%dT%H:%M:%SZ')
         }
         logging.debug('Generated unusual time interval: Start date={} End date={}'.format(time_interval['start_time'], time_interval['end_time']))
         return time_interval
 
-    def generate_normal_batch_process(self):
+    def generate_normal_report(self):
         process = {
             "server_name" : self.name,
             **self.generate_normal_time_interval()
@@ -86,7 +87,7 @@ class AcmeCore():
         logging.debug('Generated normal batch process: Server name={} Start date={} End date={}'.format(process['server_name'],process['start_time'], process['end_time']))
         return process
 
-    def generate_unusual_batch_process(self):
+    def generate_unusual_report(self):
         process = {
             "server_name" : self.name,
             **self.generate_unusual_time_interval()
@@ -95,7 +96,7 @@ class AcmeCore():
         return process
 
     def post_normal_report(self):
-        process = self.generate_normal_batch_process()
+        process = self.generate_normal_report()
         logging.info('Posting normal batch process: Server name={} Start date={} End date={} url={}'.format(process['server_name'],process['start_time'], process['end_time'], self.metric_server))
 
         try:
@@ -104,7 +105,7 @@ class AcmeCore():
             logging.info('Posting normal batch process to {} failed, reason: {}'.format(self.metric_server, sys.exc_info()[0]))
 
     def post_unusual_report(self):
-        process = self.generate_unusual_batch_process()
+        process = self.generate_unusual_report()
         logging.info('Posting unusual batch process: Server name={} Start date={} End date={} url={}'.format(process['server_name'],process['start_time'], process['end_time'], self.metric_server))
         
         try:

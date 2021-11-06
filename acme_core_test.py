@@ -1,18 +1,20 @@
+import datetime
 import unittest
 from acme_core import AcmeCore
 
 class TestAcmeServer(unittest.TestCase):
 
     def setUp(self):
+        self.server_name_regex = 't-\d{9}'
+        self.utcregex = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
         self.acme_core = AcmeCore(log_level='DEBUG')
         
     def test_generate_utc_date(self):
         date = self.acme_core.generate_utc_date()
-        self.assertIsNotNone(date)
-
+        self.assertTrue(isinstance(date, datetime.date))
     def test_generate_server_name(self):
         name = self.acme_core.generate_server_name()
-        self.assertIsNotNone(name)
+        self.assertRegex(name, self.server_name_regex)
 
     def test_server_name_should_be_present(self):
         self.assertIsNotNone(self.acme_core.name)
@@ -27,28 +29,28 @@ class TestAcmeServer(unittest.TestCase):
 
     def test_generate_normal_time_interval(self):
         interval = self.acme_core.generate_normal_time_interval()
-        self.assertIsNotNone(interval['start_time'])
-        self.assertIsNotNone(interval['end_time'])
+        self.assertRegex(interval['start_time'], self.utcregex)
+        self.assertRegex(interval['end_time'], self.utcregex)
 
     def test_generate_normal_time_interval_gap_is_correct(self):
         interval = self.acme_core.generate_normal_time_interval()
 
-    def test_generate_normal_batch_process(self):
-        request = self.acme_core.generate_normal_batch_process()
-        self.assertIsNotNone(request['server_name'])
-        self.assertIsNotNone(request['start_time'])
-        self.assertIsNotNone(request['end_time'])
+    def test_generate_normal_report(self):
+        request = self.acme_core.generate_normal_report()
+        self.assertRegex(request['server_name'], self.server_name_regex)
+        self.assertRegex(request['start_time'], self.utcregex)
+        self.assertRegex(request['end_time'], self.utcregex)
 
     def test_generate_unusual_time_interval(self):
         interval = self.acme_core.generate_unusual_time_interval()
-        self.assertIsNotNone(interval['start_time'])
-        self.assertIsNotNone(interval['end_time'])
+        self.assertRegex(interval['start_time'], self.utcregex)
+        self.assertRegex(interval['end_time'], self.utcregex)
 
     def test_generate_unusual_batch_process(self):
-        request = self.acme_core.generate_unusual_batch_process()
-        self.assertIsNotNone(request['server_name'])
-        self.assertIsNotNone(request['start_time'])
-        self.assertIsNotNone(request['end_time'])
+        request = self.acme_core.generate_unusual_report()
+        self.assertRegex(request['server_name'], self.server_name_regex)
+        self.assertRegex(request['start_time'], self.utcregex)
+        self.assertRegex(request['end_time'], self.utcregex)
 
     def test_acme_server_should_have_metric_server(self):
         self.assertIsNotNone(self.acme_core.metric_server)
