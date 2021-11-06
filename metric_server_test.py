@@ -156,16 +156,19 @@ class TestMetricServer(unittest.TestCase):
                 { 'start_time': '2021-11-04T15:49:03.224052', 'end_time': '2021-11-04T16:16:48.224052' },
                 { 'start_time': '2021-11-04T15:49:03.285827', 'end_time': '2021-11-04T16:23:09.285827' },
                 { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:18:45.295629' }
+            ],
+            't-444444444': [
+                { 'start_time': '2021-11-04T15:49:03.224052', 'end_time': '2021-11-04T16:16:48.224052' },
+                { 'start_time': '2021-11-04T15:49:03.285827', 'end_time': '2021-11-04T16:23:09.285827' },
+                # the outlier
+                { 'start_time': '2021-11-04T15:49:03.295629', 'end_time': '2021-11-04T16:43:45.295629' }
             ]
         }
 
         self.metric_server.storage = inputs
 
         outliers = self.metric_server.get_outlier_servers()
-        expected = [
-            't-222222222',
-            't-333333333'
-        ]
+        expected = [ 't-444444444' ]
         self.assertListEqual(expected, outliers)
 
 if __name__ == '__main__':
