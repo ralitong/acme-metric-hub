@@ -2,7 +2,7 @@ import logging
 import statistics
 from dateutil import parser
 
-class MetricServer:
+class MetricCore:
 
     def __init__(self, log_level='INFO'):
         self.set_log_level(log_level)

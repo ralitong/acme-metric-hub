@@ -4,7 +4,7 @@ import random
 import requests
 
 
-class AcmeServer():
+class AcmeCore():
 
     def __init__(self, metric_server='http://localhost:8080', log_level='INFO'):
         self.set_log_level(log_level)
