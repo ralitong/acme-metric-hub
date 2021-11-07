@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="refresh" content="5" >
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>ACME METRIC DASHBOARD</title>
+  </head>
+  <body>
+      
+      <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-center">
+                    <h1>ACME METRIC DASHBOARD</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <h2>STANDARD DEVIATION</h2>
+          </div>
+          <div class="col-sm">
+            <h2>{{ standard_deviation }}</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <h2>MEAN</h2>
+          </div>
+          <div class="col-sm">
+            <h2>{{ mean }}</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <h2>OUTLIER SERVERS</h2>
+          </div>
+        </div>
+        {% for server in outliers %}
+        <div class="row">
+            <div class="col-sm">
+              <h2>{{ server }}</h2>
+            </div>
+          </div>
+        {% endfor %}
+    </div>
+
+  </body
+</html>

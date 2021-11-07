@@ -1,6 +1,5 @@
 import json
-from flask import Flask
-from flask import request, abort
+from flask import Flask, request, abort, render_template
 from metric_core import MetricCore
 
 app = Flask(__name__)
@@ -28,3 +27,20 @@ def process_statistics():
 @app.route('/process_outliers', methods=['GET'])
 def process_outliers():
     return json.dumps(metric_core.process_outliers())
+
+
+@app.route('/', methods=['GET'])
+def get_dashboard():
+    statistics = metric_core.process_statistics()
+    mean = 'NOT YET AVAILABLE...'
+    standard_deviation = 'NOT YET AVAILABLE...'
+    if statistics['mean']:
+        mean = statistics['mean']
+    if statistics['stddev']:
+        standard_deviation = statistics['stddev']
+
+
+    return render_template('index.html', 
+    mean=mean, 
+    standard_deviation=standard_deviation,
+    outliers=metric_core.process_outliers())

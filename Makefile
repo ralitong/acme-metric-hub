@@ -1,3 +1,7 @@
+test:
+	python3 acme_core_test.py
+	python3 metric_core_test.py
+
 docker-run-many: docker-stop
 	sudo docker-compose -f docker-compose.many.yml -p manyacme up -d
 

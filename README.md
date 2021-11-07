@@ -205,7 +205,7 @@ and mean of the reports from the containers
     {"mean":1703,"stddev":136}
 
 The architecture:
-![Markdown image](./docker-architecture.png)
+![Docker architecture](./docker-architecture.png)
 
 ### Stopping the containers
 Execute `make docker-stop` to free up memory consumed by
@@ -224,3 +224,8 @@ the containers
     Removing network fewacme_default
     WARNING: Network fewacme_default not found.
 
+## Extras
+### Viewing the dashboard
+To view the statistics and outlier servers on a web view  
+Visit http://localhost:5000 or http:\<ADDRESS OF YOUR VM\>:5000
+![Metric server dashboard](./metric-server-dashboard.png)
