@@ -4,12 +4,6 @@ services:
       build:
         context: ./
         dockerfile: Dockerfile.MetricServer
-      deploy:
-        restart_policy:
-          condition: on-failure
-          delay: 5s
-          max_attempts: 10
-          window: 120s
       command: ['5000']
       ports: 
           - "5000:5000"
