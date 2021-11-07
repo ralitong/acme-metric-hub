@@ -1,12 +1,12 @@
-docker-run-fast: stop-docker
-	sudo docker-compose -f docker-compose.fast.yml -p fastacme up -d
+docker-run-many: docker-stop
+	sudo docker-compose -f docker-compose.many.yml -p manyacme up -d
 
-docker-run-slow: stop-docker
-	sudo docker-compose -f docker-compose.slow.yml -p slowacme up -d
+docker-run-few: docker-stop
+	sudo docker-compose -f docker-compose.few.yml -p fewacme up -d
 
-stop-docker:
-	sudo docker-compose -f docker-compose.fast.yml -p fastacme down
-	sudo docker-compose -f docker-compose.slow.yml -p slowacme down
+docker-stop:
+	sudo docker-compose -f docker-compose.many.yml -p manyacme down
+	sudo docker-compose -f docker-compose.few.yml -p fewacme down
 
 install-dependencies-debian:
 	sudo apt-get install docker -y
