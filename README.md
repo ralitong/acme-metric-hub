@@ -15,10 +15,10 @@ to the Operating System of your choice
 ### Installing the Metric Hub project dependencies
 
 #### Verifying make install
-After installing `make`, type `make --version` in the terminal
+After installing `make`, execute `make --version` in the terminal
 to verify that it is installed properly.  
 
-You should received an output similar to below:
+You should see an output similar to below:
 
     ubuntu@vanillaubuntu:~/acme-metric-hub$ make --version
     GNU Make 4.2.1
@@ -55,13 +55,13 @@ You should be able to see output similar to below:
     * Debug mode: off
     2021-11-07 05:25:27,346 - werkzeug - INFO -  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 
-### Verifying 500 reponse
+### Verifying HTTP 500 reponse
 
 Open another terminal to verify the metric server
 
 When requesting statistics information from the metric server,
-using `make get-statistics`. It will return a 500 response
-since no report yet has been sent to the metric server.
+using `make get-statistics`. It will return an HTTP 500 response
+since no report has been sent to the metric server.
 
     ubuntu@vanillaubuntu:~/acme-metric-hub$ make get-statistics 
     curl http://localhost:5000/process_statistics
@@ -70,7 +70,7 @@ since no report yet has been sent to the metric server.
     <h1>Internal Server Error</h1>
     <p>Not enough reports received</p>
 
-### Verifying outlier servers is empty
+### Verifying outlier servers request is empty
 Since metric server has not yet received reports from its
 client servers, Executing `make get-outliers` should return an
 empty response
@@ -81,7 +81,8 @@ empty response
 
 ### Running a normal server, sending data to metric server
 The normal server will send a report to the metric server
-with process lasting from 27 - 30 minutes.  
+with process lasting from 27 - 30 minutes.
+
 Open another terminal and execute `make run-normal-server`  
 You should see an output similar to below:
 
@@ -103,8 +104,8 @@ Open another terminal and execute the commands below:
 
 ### Simulating an outlier server
 To test if the metric server can detect an outlier server.
-Eexcute `make run-unusual-server` to send outlier report
-to metric server. 
+Eexcute `make run-unusual-server` to send an outlier report
+to the metric server. 
 
     ubuntu@vanillaubuntu:~/acme-metric-hub$ make run-unusual-server 
     bash start_unusual_acme_server.sh
@@ -113,12 +114,12 @@ to metric server.
 
 > Notice that compared to the normal server, the unusual server
 > sends data at a slower rate (every 10 seconds).  
-> This is intentional so that the metric server will detect it as
-> outlier
+> This is intentional so that the metric server will detect
+> the report as an outlier
 
 ### Getting the outlier server
 Now that there is a normal server and an unusual server sending
-outlier data to the metric server.  
+outlier reports to the metric server.  
 An outlier server should appear when executing `make get-outliers`  
 
 Open another terminal, execute the command below:
@@ -130,6 +131,10 @@ Open another terminal, execute the command below:
 ## Using Docker to simulate multiple normal and unusual servers
 
 ### Closing previously executed servers
+Close previously launched metric server, normal server
+and unusual server so that there wont be any port
+conflicts when running the containers.
+
 
 #### Stopping Metric Server
 Stop the metric server by executing `Ctrl + C` on the previous
