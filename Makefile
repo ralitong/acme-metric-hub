@@ -1,12 +1,12 @@
 docker-run-fast: stop-docker
-	docker-compose -f docker-compose.fast.yml -p fastacme up -d
+	sudo docker-compose -f docker-compose.fast.yml -p fastacme up -d
 
 docker-run-slow: stop-docker
-	docker-compose -f docker-compose.slow.yml -p slowacme up -d
+	sudo docker-compose -f docker-compose.slow.yml -p slowacme up -d
 
 stop-docker:
-	docker-compose -f docker-compose.fast.yml -p fastacme down
-	docker-compose -f docker-compose.slow.yml -p slowacme down
+	sudo docker-compose -f docker-compose.fast.yml -p fastacme down
+	sudo docker-compose -f docker-compose.slow.yml -p slowacme down
 
 install-dependencies-debian:
 	sudo apt-get install docker -y
@@ -17,6 +17,9 @@ install-dependencies-debian:
 	sudo apt-get install curl -y
 	pip3 install -r requirements.txt
 
+	sudo systemctl enable docker
+	sudo systemctl start docker
+
 install-dependencies-fedora:
 	sudo yum install docker -y
 	sudo yum install docker-compose -y
@@ -25,6 +28,9 @@ install-dependencies-fedora:
 	sudo yum install python3-flask -y
 	sudo yum install curl -y
 	pip3 install -r requirements.txt
+
+	sudo systemctl enable docker
+	sudo systemctl start docker
 
 run-metric-server:
 	bash start_metric_server.sh
