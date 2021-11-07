@@ -3,10 +3,10 @@ test:
 	python3 metric_core_test.py
 
 docker-run-many: docker-stop
-	sudo docker-compose -f docker-compose.many.yml -p manyacme up -d
+	sudo docker-compose -f docker-compose.many.yml -p manyacme up -d --build
 
 docker-run-few: docker-stop
-	sudo docker-compose -f docker-compose.few.yml -p fewacme up -d
+	sudo docker-compose -f docker-compose.few.yml -p fewacme up -d --build
 
 docker-stop:
 	sudo docker-compose -f docker-compose.many.yml -p manyacme down

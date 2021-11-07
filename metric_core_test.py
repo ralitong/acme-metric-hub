@@ -148,6 +148,17 @@ class TestMetricCore(unittest.TestCase):
         standard_deviation = self.metric_core.get_overall_standard_deviation()
         self.assertEqual(standard_deviation, 0)
 
+    def test_getting_overall_standard_deviation_should_return_0_if_there_is_single_report(self):
+        inputs = {
+            't-111111111': [
+                { 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' }
+            ]
+        }
+
+        self.metric_core.reports = inputs
+        standard_deviation = self.metric_core.get_overall_standard_deviation()
+        self.assertEqual(standard_deviation, 0)
+
     def test_process_outliers(self):
         inputs = {
             't-111111111': [

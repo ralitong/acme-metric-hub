@@ -70,7 +70,7 @@ class MetricCore:
 
     def get_overall_standard_deviation(self):
         durations = self.get_all_durations()
-        if(len(durations) == 0):
+        if(len(durations) < 2):
             logging.warning('No reports yet available, returning overall standard deviation as 0')
             return 0
         return self.compute_standard_deviation(durations)
