@@ -38,6 +38,8 @@ class MetricCore:
             'end_time': data['end_time']
         })
 
+        self.dynamic_store(data)
+
     def compute_gap(self, data):
         start_time = parser.isoparse(data['start_time'])
         end_time = parser.isoparse(data['end_time'])

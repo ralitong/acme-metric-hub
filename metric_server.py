@@ -62,3 +62,53 @@ def get_dashboard():
     mean=mean, 
     standard_deviation=standard_deviation,
     outliers=metric_core.process_outliers())
+
+
+@app.route('/v2/process_statistics', methods=['GET'])
+def dynamic_process_statistics():
+    start = datetime.datetime.utcnow()
+    
+    statistics = metric_core.dynamic_process_statistics()
+    app.logger.info('Statistics: {}'.format(statistics))
+
+    end = datetime.datetime.utcnow()
+    delta = end - start
+    app.logger.info('Dynamic Processing statistics took {} seconds'.format(delta.total_seconds()))
+    
+    
+    error_message = 'Cannot send report, not enough data ...'
+    if(statistics['mean'] == '' or statistics['stddev'] == ''):
+        app.logger.error(error_message)
+        abort(500, 'Not enough reports received')
+    else:
+        return statistics
+
+
+@app.route('/v2/process_outliers', methods=['GET'])
+def dynamic_process_outliers():
+    start = datetime.datetime.utcnow()
+
+    outliers = metric_core.dynamic_process_outliers()
+
+    end = datetime.datetime.utcnow()
+    delta = end - start
+    app.logger.info('Dynamic Processing outliers took {} seconds'.format(delta.total_seconds()))
+
+
+    return json.dumps(outliers)
+
+@app.route('/v2', methods=['GET'])
+def dynamic_get_dashboard():
+    statistics = metric_core.dynamic_process_statistics()
+    mean = 'NOT YET AVAILABLE...'
+    standard_deviation = 'NOT YET AVAILABLE...'
+    if statistics['mean']:
+        mean = statistics['mean']
+    if statistics['stddev']:
+        standard_deviation = statistics['stddev']
+
+
+    return render_template('index.html', 
+    mean=mean, 
+    standard_deviation=standard_deviation,
+    outliers=metric_core.dynamic_process_outliers())

@@ -51,3 +51,10 @@ get-statistics:
 get-outliers:
 	curl http://localhost:5000/process_outliers
 
+
+get-dynamic-statistics:
+	curl http://localhost:5000/v2/process_statistics
+
+get-dynamic-outliers:
+	curl http://localhost:5000/v2/process_outliers
+
