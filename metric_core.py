@@ -24,6 +24,7 @@ class MetricCore:
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=level)
 
         self.reports = {}
+        self.dynamic_reports = {}
 
     def store(self, data):
         if not data['server_name'] in self.reports:
@@ -56,10 +57,10 @@ class MetricCore:
         return round(statistics.stdev(gaps))
 
     def get_all_durations(self):
-        gaps = []
+        durations = []
         for key in self.reports.keys():
-            gaps.extend(self.reports[key])
-        return gaps
+            durations.extend(self.reports[key])
+        return durations
 
     def get_overall_mean(self):
         durations = self.get_all_durations()
@@ -108,3 +109,62 @@ class MetricCore:
                 'mean': '',
                 'stddev': ''
             }
+
+
+    def dynamic_store(self, data):
+        if not data['server_name'] in self.dynamic_reports.keys():
+            self.dynamic_reports[data['server_name']] = []
+
+        self.dynamic_reports[data['server_name']].append(self.compute_gap(data))
+
+    def get_all_dynamic_gaps(self):
+        gaps = []
+        for key in self.dynamic_reports.keys():
+            gaps.extend(self.dynamic_reports[key])
+        return gaps
+
+
+    def get_dynamic_overall_mean(self):
+        gaps = self.get_all_dynamic_gaps()
+        return round(statistics.mean(gaps))
+
+    def get_dynamic_overall_standard_deviation(self):
+        gaps = self.get_all_dynamic_gaps()
+        return round(statistics.stdev(gaps))
+
+
+    def dynamic_process_statistics(self):
+        num_gaps = len(self.get_all_dynamic_gaps())
+        if num_gaps >= 10:
+            return {
+                'mean': self.get_dynamic_overall_mean(),
+                'stddev': self.get_dynamic_overall_standard_deviation()
+            }
+        else:
+            return {
+                'mean': '',
+                'stddev': ''
+            }
+
+
+    def dynamic_process_outliers(self):
+        servers = []
+        if(len(self.get_all_dynamic_gaps()) >= 2):
+            standard_deviation = self.get_dynamic_overall_standard_deviation()
+            mean = self.get_dynamic_overall_mean()
+            outlier_lower_limit = mean - (standard_deviation * 3)
+            outlier_upper_limit = mean + (standard_deviation * 3)
+            
+            logging.debug('Standard deviation: {}'.format(standard_deviation))
+            logging.debug('Mean: {}'.format(mean))
+            logging.debug('Standard deviation times three: {}'.format(standard_deviation * 3))
+            logging.debug('Outlier lower limit: {}'.format(outlier_lower_limit))
+            logging.debug('Outlier upper limit: {}'.format(outlier_upper_limit))
+
+            for server in self.dynamic_reports.keys():
+                for gap in self.dynamic_reports[server]:
+                    logging.debug('The gap: ' + str(gap))
+                    if gap < outlier_lower_limit or gap > outlier_upper_limit:
+                        servers.append(server)
+
+        return list(set(servers))

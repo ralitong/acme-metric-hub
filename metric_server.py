@@ -1,4 +1,5 @@
 import json
+import datetime
 from flask import Flask, request, abort, render_template
 from metric_core import MetricCore
 
@@ -15,7 +16,16 @@ def process_report():
 
 @app.route('/process_statistics', methods=['GET'])
 def process_statistics():
+    start = datetime.datetime.utcnow()
+    
     statistics = metric_core.process_statistics()
+    
+
+    end = datetime.datetime.utcnow()
+    delta = end - start
+    app.logger.info('Processing statistics took {} seconds'.format(delta.total_seconds()))
+    
+    
     error_message = 'Cannot send report, not enough data ...'
     if(statistics['mean'] == '' or statistics['stddev'] == ''):
         app.logger.error(error_message)
@@ -26,12 +36,20 @@ def process_statistics():
 
 @app.route('/process_outliers', methods=['GET'])
 def process_outliers():
-    return json.dumps(metric_core.process_outliers())
+    start = datetime.datetime.utcnow()
 
+    outliers = metric_core.process_outliers()
+
+    end = datetime.datetime.utcnow()
+    delta = end - start
+    app.logger.info('Processing outliers took {} seconds'.format(delta.total_seconds()))
+
+
+    return json.dumps(outliers)
 
 @app.route('/', methods=['GET'])
 def get_dashboard():
-    statistics = metric_core.process_statistics()
+    statistics = metric_core.process_statistics() 
     mean = 'NOT YET AVAILABLE...'
     standard_deviation = 'NOT YET AVAILABLE...'
     if statistics['mean']:

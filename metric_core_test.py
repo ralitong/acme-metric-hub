@@ -245,5 +245,140 @@ class TestMetricCore(unittest.TestCase):
         self.assertEqual(processed_statistics['mean'], '')
         self.assertEqual(processed_statistics['stddev'], '')
 
+    def test_dynamic_store_data_one_elem(self):
+        server_name = 't-222222222'
+        one = { 'server_name': server_name, 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' }
+        self.metric_core.dynamic_store(one)
+        self.assertEqual(self.metric_core.dynamic_reports[server_name][0], 3780)
+
+    def test_dynamic_store_data_two_elem(self):
+        server_name = 't-222222222'
+        self.metric_core.dynamic_store({ 'server_name': server_name, 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        self.metric_core.dynamic_store({ 'server_name': server_name, 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        self.assertEqual(self.metric_core.dynamic_reports[server_name][0], 3780)
+        self.assertEqual(self.metric_core.dynamic_reports[server_name][1], 3780)
+
+
+    def test_dynamic_store_more_than_one_server(self):
+        server_name_a = 't-222222222'
+        self.metric_core.dynamic_store({ 'server_name': server_name_a, 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        self.metric_core.dynamic_store({ 'server_name': server_name_a, 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        self.metric_core.dynamic_store({ 'server_name': server_name_a, 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        
+        server_name_b = 't-333333333'
+        self.metric_core.dynamic_store({ 'server_name': server_name_b, 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        self.metric_core.dynamic_store({ 'server_name': server_name_b, 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+
+        self.assertEqual(self.metric_core.dynamic_reports[server_name_a][0], 3780)
+        self.assertEqual(self.metric_core.dynamic_reports[server_name_a][1], 3780)
+        self.assertEqual(self.metric_core.dynamic_reports[server_name_a][2], 3780)
+
+        self.assertEqual(self.metric_core.dynamic_reports[server_name_b][0], 3780)
+        self.assertEqual(self.metric_core.dynamic_reports[server_name_b][1], 3780)
+
+
+
+    def test_get_all_dynamic_gaps(self):
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-05-17T11:12:33Z', 'end_time': '2021-05-17T12:15:33Z' })
+
+        gaps = self.metric_core.get_all_dynamic_gaps()
+        self.assertEqual(gaps[0], 3780)
+        self.assertEqual(gaps[1], 3780)
+        self.assertEqual(gaps[2], 3780)
+        self.assertEqual(gaps[3], 3780)
+        self.assertEqual(gaps[4], 3780)
+
+
+    def test_dynamic_get_overall_mean(self):
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:19:14Z' })
+
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:19:09Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+        
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:19:09Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+
+
+        self.assertEqual(self.metric_core.get_dynamic_overall_mean(), 1741)
+
+    def test_dynamic_get_overall_standard_deviation(self):
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:19:14Z' })
+
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:19:09Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:19:09Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+
+
+        self.assertEqual(self.metric_core.get_dynamic_overall_standard_deviation(), 58)
+
+    def test_dynamic_process_statistics_empty(self):
+        processed_statistics = self.metric_core.dynamic_process_statistics()
+        self.assertEqual(processed_statistics['mean'], '')
+        self.assertEqual(processed_statistics['stddev'], '')
+
+
+    def test_dynamic_process_statistics(self):
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:19:14Z' })
+
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:19:09Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+        
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:19:09Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+
+        processed_statistics = self.metric_core.dynamic_process_statistics()
+        self.assertEqual(processed_statistics['mean'], 1741)
+        self.assertEqual(processed_statistics['stddev'], 58)
+
+    def test_dynamic_process_outliers_empty(self):
+        outliers = self.metric_core.dynamic_process_outliers()
+        self.assertTrue(len(outliers) == 0)
+    
+
+    def test_dynamic_process_outliers(self):
+        self.metric_core.dynamic_store({ 'server_name': 't-111111111', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-111111111', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:22Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-111111111', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:19:14Z' })
+
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:19:49Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-05T16:50:12Z', 'end_time': '2021-11-05T17:18:59Z' })
+        self.metric_core.dynamic_store({ 'server_name': 't-222222222', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+        
+        self.metric_core.dynamic_store({ 'server_name' :'t-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:23:09Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-333333333', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:18:45Z' })
+
+
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:16:48Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:23:09Z' })
+        self.metric_core.dynamic_store({ 'server_name' :'t-444444444', 'start_time': '2021-11-04T15:49:03Z', 'end_time': '2021-11-04T16:43:45Z' })
+
+        outliers = self.metric_core.dynamic_process_outliers()
+        expected = [ 't-444444444' ]
+        self.assertListEqual(expected, outliers)
+
+
 if __name__ == '__main__':
     unittest.main()
